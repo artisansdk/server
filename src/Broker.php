@@ -11,6 +11,7 @@ use ArtisanSDK\Server\Messages\MessageException;
 use ArtisanSDK\Server\Traits\FluentProperties;
 use ArtisanSDK\Server\Traits\RatchetAdapter;
 use Exception;
+use InvalidArgumentException;
 use Ratchet\MessageComponentInterface as RatchetInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
