@@ -114,7 +114,7 @@ interface Timer
      *
      * @param string|\ArtisanSDK\Server\Contracts\Command $command
      *
-     * @throws \InvalidArgumentException if command argument is not a Command instance.
+     * @throws \InvalidArgumentException if command argument is not a Command instance
      *
      * @return \ArtisanSDK\Server\Contracts\Command|self
      */

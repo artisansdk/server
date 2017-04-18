@@ -14,15 +14,18 @@ return Config::create()
         'not_operator_with_space' => true,
         'ordered_imports' => true,
         'phpdoc_order' => true,
-        'phpdoc_type_to_var' => true,
         'psr0' => false,
-        'short_array_syntax' => true,
-        'unalign_double_arrow' => false,
-        'unalign_equals' => false,
+        'array_syntax' => [
+            'syntax' => 'short',
+        ],
+        'binary_operator_spaces' => [
+            'align_double_arrow' => true,
+            'align_equals' => true,
+        ],
     ])
-    ->finder(
+    ->setFinder(
         Finder::create()
-            ->in(__DIR__.'/src')
             ->in(__DIR__.'/config')
+            ->in(__DIR__.'/src')
             ->in(__DIR__.'/tests')
     );

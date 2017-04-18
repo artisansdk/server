@@ -86,7 +86,7 @@ class Manager implements ManagerInterface
         // Log the start time
         $this->broker()->log('Server started at: '.time());
 
-        // Initialize the initial state
+        // Initialize the application state
         $this->boot();
 
         // Start the actual loop: starts blocking
@@ -498,8 +498,8 @@ class Manager implements ManagerInterface
      */
     public function work(Job $job)
     {
-        $payload = $job->getRawBody();
-        $message = json_decode($payload, true);
+        $payload   = $job->getRawBody();
+        $message   = json_decode($payload, true);
         $arguments = array_get($message, 'data', []);
 
         $command = array_get($message, 'job');

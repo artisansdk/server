@@ -133,7 +133,6 @@ class Listener implements ListenerInterface
                 }
             });
 
-
         return new $collection($messages);
     }
 

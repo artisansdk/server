@@ -72,7 +72,7 @@ interface Promise
      *
      * @param \ArtisanSDK\Server\Contracts\Promise|string $promise
      *
-     * @throws \InvalidArgumentException if promise argument is not a Promise instance.
+     * @throws \InvalidArgumentException if promise argument is not a Promise instance
      *
      * @return \ArtisanSDK\Server\Contracts\Promise
      */

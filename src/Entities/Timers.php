@@ -48,7 +48,7 @@ class Timers extends Collection
     /**
      * Filter timers to those that are active.
      *
-     * @param bool $include active timers.
+     * @param bool $include active timers
      *
      * @return self
      */
@@ -63,7 +63,7 @@ class Timers extends Collection
     /**
      * Filter timers to those that are paused.
      *
-     * @param bool $include paused timers.
+     * @param bool $include paused timers
      *
      * @return self
      */

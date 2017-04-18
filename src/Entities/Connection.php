@@ -206,7 +206,7 @@ class Connection implements ConnectionInterface, Arrayable, Jsonable, JsonSerial
     /**
      * Add a topic that the connection subscribes to.
      *
-     * @param \ArtisanSDK\Server\Contracts\Topic $topic to subscribe to.
+     * @param \ArtisanSDK\Server\Contracts\Topic $topic to subscribe to
      *
      * @return self
      */
@@ -220,7 +220,7 @@ class Connection implements ConnectionInterface, Arrayable, Jsonable, JsonSerial
     /**
      * Remove a topic that the connection is subscribed to.
      *
-     * @param \ArtisanSDK\Server\Contracts\Topic $topic to unsubscribe from.
+     * @param \ArtisanSDK\Server\Contracts\Topic $topic to unsubscribe from
      *
      * @return self
      */

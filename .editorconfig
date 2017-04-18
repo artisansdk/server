@@ -15,11 +15,11 @@ indent_size = 4
 indent_style = tab
 
 # 4-spaced files
-[**.{js,json,php,xml,md}]
+[**.{js,json,php,xml,md,yml,yaml}]
 indent_size = 4
 
 # 2-spaced files
-[**.{css,less,sass,scss,html,htm,xhtml,yml,blade.php}]
+[**.{css,less,sass,scss,html,htm,xhtml,blade.php}]
 indent_size = 2
 
 [{node_modules,vendor,bower_components}/**]

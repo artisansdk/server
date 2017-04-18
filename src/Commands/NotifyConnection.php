@@ -17,7 +17,7 @@ class NotifyConnection extends Command
     {
         parent::__construct($arguments);
         $this->receiver = array_get($arguments, 'receiver');
-        $this->sender = array_get($arguments, 'sender');
+        $this->sender   = array_get($arguments, 'sender');
     }
 
     /**
@@ -32,7 +32,7 @@ class NotifyConnection extends Command
 
         $receiver = $everyone->uuid($this->receiver);
 
-        $notification = new Notification($this->sender);
+        $notification  = new Notification($this->sender);
         $notifications = $receiver->notifications();
         $notifications->put($notification->sender(), $notification);
 

@@ -194,7 +194,7 @@ abstract class Process implements ProcessInterface
      * @param string $method
      * @param array  $arguments
      *
-     * @throws Exception if method is not defined on instance.
+     * @throws Exception if method is not defined on instance
      *
      * @return mixed
      */

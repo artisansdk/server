@@ -2,7 +2,6 @@
 
 namespace ArtisanSDK\Server\Console;
 
-use ArtisanSDK\Server\Manager;
 use ArtisanSDK\Server\Server;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Queue;
@@ -38,7 +37,7 @@ class ServerStart extends Command
      */
     protected function makeSignature()
     {
-        $options = [];
+        $options   = [];
         $options[] = '--A|address='.config('server.address').' : The address that the server will bind to for client connections';
         $options[] = '--P|port='.config('server.port').' : The port that the server will listen on for client connections';
         $options[] = '--Q|queue='.config('server.queue').' : The message queue that the server will be responsible for processing';
@@ -58,7 +57,6 @@ class ServerStart extends Command
     {
         Server::make()
             ->bind($this->option('address'), $this->option('port'))
-            ->uses(new Manager())
             ->uses($this->getOutput())
             ->uses(Queue::connection($this->option('connector')), $this->option('queue'))
             ->password($this->option('key'))

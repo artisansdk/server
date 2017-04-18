@@ -19,6 +19,6 @@ class NotifyConnection extends Message implements ClientMessage
     {
         parent::__construct($arguments);
         $this->receiver = array_get($arguments, 'receiver');
-        $this->sender = array_get($arguments, 'sender');
+        $this->sender   = array_get($arguments, 'sender');
     }
 }

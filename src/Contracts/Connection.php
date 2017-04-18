@@ -139,7 +139,7 @@ interface Connection extends ConnectionInterface
     /**
      * Add a topic that the connection subscribes to.
      *
-     * @param \ArtisanSDK\Server\Contracts\Topic $topic to subscribe to.
+     * @param \ArtisanSDK\Server\Contracts\Topic $topic to subscribe to
      *
      * @return self
      */
@@ -148,7 +148,7 @@ interface Connection extends ConnectionInterface
     /**
      * Remove a topic that the connection is subscribed to.
      *
-     * @param \ArtisanSDK\Server\Contracts\Topic $topic to unsubscribe from.
+     * @param \ArtisanSDK\Server\Contracts\Topic $topic to unsubscribe from
      *
      * @return self
      */

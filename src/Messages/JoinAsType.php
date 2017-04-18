@@ -21,10 +21,10 @@ abstract class JoinAsType extends Message implements ClientMessage, SelfHandling
     public function __construct(array $arguments = [])
     {
         parent::__construct($arguments);
-        $this->email = array_get($arguments, 'registration.email', 'Not Available');
+        $this->email      = array_get($arguments, 'registration.email', 'Not Available');
         $this->first_name = array_get($arguments, 'registration.name.first');
-        $this->last_name = array_get($arguments, 'registration.name.last');
-        $this->type = Connection::ANONYMOUS;
+        $this->last_name  = array_get($arguments, 'registration.name.last');
+        $this->type       = Connection::ANONYMOUS;
     }
 
     /**
@@ -32,9 +32,9 @@ abstract class JoinAsType extends Message implements ClientMessage, SelfHandling
      */
     public function handle()
     {
-        $connection = array_filter($this->attributes);
+        $connection         = array_filter($this->attributes);
         $connection['uuid'] = $this->client()->uuid();
-        $command = new RegisterConnection(compact('connection'));
+        $command            = new RegisterConnection(compact('connection'));
 
         return $this->dispatcher()->run($command);
     }

@@ -80,7 +80,7 @@ class Topic implements TopicInterface, Arrayable, Jsonable, JsonSerializable
     /**
      * Add a connection to the topic's subscriptions.
      *
-     * @param \ArtisanSDK\Server\Contracts\Connection $connection to subscribe.
+     * @param \ArtisanSDK\Server\Contracts\Connection $connection to subscribe
      *
      * @return self
      */
@@ -94,7 +94,7 @@ class Topic implements TopicInterface, Arrayable, Jsonable, JsonSerializable
     /**
      * Remove a connection from the topic's subscriptions.
      *
-     * @param \ArtisanSDK\Server\Contracts\Connection $connection to unsubscribe.
+     * @param \ArtisanSDK\Server\Contracts\Connection $connection to unsubscribe
      *
      * @return self
      */

@@ -135,7 +135,7 @@ abstract class Promise implements PromiseInterface
      *
      * @param \ArtisanSDK\Server\Contracts\Promise|string $promise
      *
-     * @throws \InvalidArgumentException if promise argument is not a Promise instance.
+     * @throws \InvalidArgumentException if promise argument is not a Promise instance
      *
      * @return \ArtisanSDK\Server\Contracts\Promise
      */
@@ -152,7 +152,7 @@ abstract class Promise implements PromiseInterface
         $promise->dispatcher($this->dispatcher());
 
         $this->promises = $this->promises ?: [$this];
-        $last = end($this->promises);
+        $last           = end($this->promises);
         $last->instance()->then(
             function ($result) use ($promise) {
                 return $promise->resolve($result);

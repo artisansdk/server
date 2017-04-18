@@ -45,7 +45,7 @@ interface Topic
     /**
      * Add a connection to the topic's subscriptions.
      *
-     * @param \ArtisanSDK\Server\Contracts\Connection $connection to subscribe.
+     * @param \ArtisanSDK\Server\Contracts\Connection $connection to subscribe
      *
      * @return self
      */
@@ -54,7 +54,7 @@ interface Topic
     /**
      * Remove a connection from the topic's subscriptions.
      *
-     * @param \ArtisanSDK\Server\Contracts\Connection $connection to unsubscribe.
+     * @param \ArtisanSDK\Server\Contracts\Connection $connection to unsubscribe
      *
      * @return self
      */

@@ -26,7 +26,7 @@ class Server implements ServerInterface
     protected $http;
     protected $manager;
     protected $output;
-    protected $port = 8080;
+    protected $port  = 8080;
     protected $queue = 'default';
     protected $socket;
     protected $websocket;
@@ -41,7 +41,7 @@ class Server implements ServerInterface
     {
         $server = app(static::class)
             ->uses(config('server'))
-            ->uses(new Manager())
+            ->uses(app(config('server.manager', Manager::class)))
             ->uses(new Broker());
 
         self::$instance = $server

@@ -3,6 +3,20 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Manager Class
+    |--------------------------------------------------------------------------
+    |
+    | The server runs as a singleton instance with with the server being the
+    | main event loop manager, the broker being the connection handler, and
+    | the manager being the kernel of the application. Sometimes you have
+    | to extend the manager and this config lets you customize that.
+    |
+    */
+
+    'manager' => ArtisanSDK\Server\Manager::class,
+
+    /*
+    |--------------------------------------------------------------------------
     | Server Address Bindings
     |--------------------------------------------------------------------------
     |
@@ -65,5 +79,4 @@ return [
     'namespaces' => [
         'ArtianSDK\\Server\\Messages\\',
     ],
-
 ];
