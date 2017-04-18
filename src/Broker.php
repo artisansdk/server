@@ -284,8 +284,8 @@ class Broker implements BrokerInterface, LoggerInterface, RatchetInterface
     protected function resolveMessage($message)
     {
         $arguments = (array) json_decode($message, true);
-        $name      = array_get($arguments, 'name');
-        $class     = $this->resolveMessageClass($name);
+        $name = array_get($arguments, 'name');
+        $class = $this->resolveMessageClass($name);
 
         return new $class($arguments);
     }

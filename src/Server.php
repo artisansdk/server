@@ -26,7 +26,7 @@ class Server implements ServerInterface
     protected $http;
     protected $manager;
     protected $output;
-    protected $port  = 8080;
+    protected $port = 8080;
     protected $queue = 'default';
     protected $socket;
     protected $websocket;
@@ -302,12 +302,12 @@ class Server implements ServerInterface
     public function connector(Queue $instance = null)
     {
         if ( ! is_null($instance)) {
-            $this->config(__FUNCTION__, $instance);
+            $this->manager->connector($instance);
+
+            return $this;
         }
 
-        $this->manager()->connector($instance);
-
-        return $this;
+        return $this->manager()->connector();
     }
 
     /**
@@ -323,12 +323,12 @@ class Server implements ServerInterface
     public function queue($name = null)
     {
         if ( ! is_null($name)) {
-            $this->config(__FUNCTION__, $name);
+            $this->manager()->queue($name);
+
+            return $this;
         }
 
-        $this->manager()->queue($name);
-
-        return $this;
+        return $this->manager()->queue();
     }
 
     /**
@@ -343,9 +343,13 @@ class Server implements ServerInterface
      */
     public function logger(OutputInterface $interface = null)
     {
-        $this->broker()->logger($interface);
+        if ( ! is_null($interface)) {
+            $this->broker()->logger($interface);
 
-        return $this;
+            return $this;
+        }
+
+        return $this->broker()->logger();
     }
 
     /**

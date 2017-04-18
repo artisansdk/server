@@ -37,7 +37,7 @@ class ServerStart extends Command
      */
     protected function makeSignature()
     {
-        $options   = [];
+        $options = [];
         $options[] = '--A|address='.config('server.address').' : The address that the server will bind to for client connections';
         $options[] = '--P|port='.config('server.port').' : The port that the server will listen on for client connections';
         $options[] = '--Q|queue='.config('server.queue').' : The message queue that the server will be responsible for processing';

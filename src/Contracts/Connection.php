@@ -9,10 +9,10 @@ use Ratchet\ConnectionInterface;
 interface Connection extends ConnectionInterface
 {
     const ANONYMOUS = 'anonymous';
-    const PLAYER    = 'player';
+    const PLAYER = 'player';
     const SPECTATOR = 'spectator';
-    const WINNER    = 'winner';
-    const LOSER     = 'loser';
+    const WINNER = 'winner';
+    const LOSER = 'loser';
 
     /**
      * Get or set the socket for the connection.

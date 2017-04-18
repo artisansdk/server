@@ -12,7 +12,7 @@ class RunQueuedCommands extends Command
     public function run()
     {
         $dispatcher = $this->dispatcher();
-        $commands   = $dispatcher->commands();
+        $commands = $dispatcher->commands();
 
         $commands->each(function ($command) use ($dispatcher, $commands) {
             $dispatcher->run($command);

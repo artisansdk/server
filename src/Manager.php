@@ -498,8 +498,8 @@ class Manager implements ManagerInterface
      */
     public function work(Job $job)
     {
-        $payload   = $job->getRawBody();
-        $message   = json_decode($payload, true);
+        $payload = $job->getRawBody();
+        $message = json_decode($payload, true);
         $arguments = array_get($message, 'data', []);
 
         $command = array_get($message, 'job');

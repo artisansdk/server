@@ -16,7 +16,7 @@ class MessageException extends Message implements ServerMessage
     public function __construct(Exception $exception)
     {
         $this->exception = get_class($exception);
-        $this->message   = $exception->getMessage();
-        $this->code      = $exception->getCode() ? $exception->getCode() : 400;
+        $this->message = $exception->getMessage();
+        $this->code = $exception->getCode() ? $exception->getCode() : 400;
     }
 }

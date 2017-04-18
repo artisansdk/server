@@ -15,9 +15,9 @@ class CurrentUptime extends Message implements ServerMessage
      */
     public function __construct(Carbon $start)
     {
-        $now           = Carbon::now();
+        $now = Carbon::now();
         $this->elapsed = $now->diffInSeconds($start);
-        $this->start   = $start->timestamp;
-        $this->now     = $now->timestamp;
+        $this->start = $start->timestamp;
+        $this->now = $now->timestamp;
     }
 }

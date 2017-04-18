@@ -16,7 +16,7 @@ class PromptForAuthentication extends Message implements ServerMessage
     public function __construct(ClientMessage $message)
     {
         $this->previous = $message->toArray();
-        $this->message  = 'Authorization required.';
-        $this->code     = 401;
+        $this->message = 'Authorization required.';
+        $this->code = 401;
     }
 }

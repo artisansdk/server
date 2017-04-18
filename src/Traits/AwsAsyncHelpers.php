@@ -19,10 +19,10 @@ trait AwsAsyncHelpers
      */
     protected function awsHttpHandler()
     {
-        $loop    = Server::instance()->loop();
+        $loop = Server::instance()->loop();
         $adapter = new HttpClientAdapter($loop);
         $handler = HandlerStack::create($adapter);
-        $client  = new GuzzleClient(['handler' => $handler]);
+        $client = new GuzzleClient(['handler' => $handler]);
 
         return new GuzzleHandler($client);
     }
@@ -65,7 +65,7 @@ trait AwsAsyncHelpers
      */
     protected function awsS3Credentials()
     {
-        $key    = $this->awsS3Config('key');
+        $key = $this->awsS3Config('key');
         $secret = $this->awsS3Config('secret');
 
         return compact('key', 'secret');

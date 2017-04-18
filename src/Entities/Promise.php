@@ -152,7 +152,7 @@ abstract class Promise implements PromiseInterface
         $promise->dispatcher($this->dispatcher());
 
         $this->promises = $this->promises ?: [$this];
-        $last           = end($this->promises);
+        $last = end($this->promises);
         $last->instance()->then(
             function ($result) use ($promise) {
                 return $promise->resolve($result);

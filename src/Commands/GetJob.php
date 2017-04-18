@@ -12,7 +12,7 @@ class GetJob extends Command
     public function run()
     {
         $dispatcher = $this->dispatcher();
-        $job        = $dispatcher->connector()
+        $job = $dispatcher->connector()
             ->pop($dispatcher->queue());
         if ( ! $job) {
             return;

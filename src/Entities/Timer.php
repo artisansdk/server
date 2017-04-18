@@ -16,7 +16,7 @@ abstract class Timer implements TimerInterface
     protected $counter = 0;
     protected $dispatcher;
     protected $interval;
-    protected $paused  = false;
+    protected $paused = false;
     protected $started = false;
     protected $timeout;
     protected $timer;
