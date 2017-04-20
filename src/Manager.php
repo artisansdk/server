@@ -64,6 +64,7 @@ class Manager implements ManagerInterface
         $this->listeners(new Listeners());
         $this->processes(new Processes());
         $this->timers(new Timers());
+        $this->topics(new Topics());
 
         // Register all the timers
         $this->add(new QueueWorker());
@@ -173,7 +174,7 @@ class Manager implements ManagerInterface
 
         $message = $this->prepareMessage($message);
 
-        if ($message->topics()->count()) {
+        if ($message->topics() && $message->topics()->count()) {
             $connections = $connections->topics($message->topics());
         }
 

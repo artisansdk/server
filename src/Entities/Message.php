@@ -13,6 +13,8 @@ abstract class Message extends Fluent implements MessageInterface
 
     protected $dispatcher;
 
+    protected $topic;
+
     /**
      * Get or set the message dispatcher.
      *

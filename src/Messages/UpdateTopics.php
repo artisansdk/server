@@ -15,6 +15,6 @@ class UpdateTopics extends Message implements ServerMessage
      */
     public function __construct(Topics $topics)
     {
-        $this->topics = $topics->toArray();
+        $this->items = $topics->toArray();
     }
 }
