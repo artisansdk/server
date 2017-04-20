@@ -26,6 +26,21 @@ abstract class Message extends Fluent implements MessageInterface
     }
 
     /**
+     * Get or set the topics available for subscribing.
+     *
+     * @example topics() ==> \ArtisanSDK\Server\Entities\Topics
+     *          topics($topics) ==> self
+     *
+     * @param \ArtisanSDK\Server\Entities\Topics $topics
+     *
+     * @return \ArtisanSDK\Server\Entities\Topics|self
+     */
+    public function topics(Topics $topics = null)
+    {
+        return $this->property(__FUNCTION__, $topics);
+    }
+
+    /**
      * Handle the message.
      *
      * @return mixed
