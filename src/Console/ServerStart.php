@@ -59,8 +59,8 @@ class ServerStart extends Command
             ->bind($this->option('address'), $this->option('port'))
             ->uses($this->getOutput())
             ->uses(Queue::connection($this->option('connector')), $this->option('queue'))
-            ->password($this->option('key'))
-            ->maxConnections($this->option('max', 0))
+            ->password((string) $this->option('key'))
+            ->maxConnections((int) $this->option('max'))
             ->start();
     }
 }
