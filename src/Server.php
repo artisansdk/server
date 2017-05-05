@@ -19,18 +19,19 @@ class Server implements ServerInterface
 {
     use FluentProperties;
 
-    protected $address = '0.0.0.0';
     protected $broker;
-    protected $config = [];
     protected $connector;
     protected $http;
     protected $manager;
     protected $output;
-    protected $port = 8080;
-    protected $queue = 'default';
     protected $socket;
     protected $websocket;
     protected static $instance;
+
+    protected $config = [
+        'address' => '0.0.0.0',
+        'port'    => 8080,
+    ];
 
     /**
      * Make a new instance of the server.
@@ -39,9 +40,10 @@ class Server implements ServerInterface
      */
     public static function make()
     {
+        $config = app('config');
         $server = app(static::class)
-            ->uses(config('server'))
-            ->uses(app(config('server.manager', Manager::class)))
+            ->uses((array) $config->get('server'))
+            ->uses(app($config->get('server.manager', Manager::class)))
             ->uses(new Broker());
 
         self::$instance = $server
@@ -152,11 +154,7 @@ class Server implements ServerInterface
      */
     public function address($ip4 = null)
     {
-        if ( ! is_null($ip4)) {
-            $this->config(__FUNCTION__, $ip4);
-        }
-
-        return $this->property(__FUNCTION__, $ip4);
+        return $this->config(__FUNCTION__, $ip4);
     }
 
     /**
@@ -171,11 +169,7 @@ class Server implements ServerInterface
      */
     public function port($number = null)
     {
-        if ( ! is_null($number)) {
-            $this->config(__FUNCTION__, $number);
-        }
-
-        return $this->property(__FUNCTION__, $number);
+        return $this->config(__FUNCTION__, $number);
     }
 
     /**
@@ -198,7 +192,7 @@ class Server implements ServerInterface
         }
 
         if (empty(func_get_args())) {
-            return [$this->address, $this->port];
+            return [$this->address(), $this->port()];
         }
 
         return $this;

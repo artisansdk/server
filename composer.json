@@ -9,6 +9,8 @@
         "cboden/ratchet": "~0.3.6",
         "illuminate/bus": "~5.4",
         "illuminate/contracts": "~5.4",
+        "illuminate/config": "~5.4",
+        "illuminate/container": "~5.4",
         "illuminate/support": "~5.4",
         "ramsey/uuid": "~3.5",
         "react/child-process": "~0.4.3",
@@ -23,7 +25,10 @@
     "autoload": {
         "psr-4": {
             "ArtisanSDK\\Server\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
