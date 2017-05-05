@@ -27,7 +27,7 @@ to the `providers` key. This will register the configs and Artisan commands prov
 by the package. You can publish these configs to `config/server.php` by running:
 
 ```
-php artisan vendor:publish --provider="ArtisanSDK\\Server\\Provider" --tag=config`
+php artisan vendor:publish --provider="ArtisanSDK\\Server\\Provider" --tag=config
 ```
 
 > **Show Me:** You can see how to integrate this package by browsing the source
