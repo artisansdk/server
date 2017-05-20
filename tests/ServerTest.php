@@ -9,12 +9,15 @@ use ArtisanSDK\Server\Contracts\Server as ServerInterface;
 use ArtisanSDK\Server\Manager;
 use ArtisanSDK\Server\Server;
 use Illuminate\Queue\NullQueue;
+use Illuminate\Support\Fluent;
 use InvalidArgumentException;
 use Mockery;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
+use React\EventLoop\Factory as LoopFactory;
 use React\EventLoop\LoopInterface;
+use React\Socket\Server as Reactor;
 use StdClass;
 use Symfony\Component\Console\Output\NullOutput;
 
@@ -209,10 +212,18 @@ class ServerTest extends TestCase
     public function testServerUsesSupportedServices()
     {
         $server = new Server();
-        $server->manager(new Manager());
-        $server->broker(new Broker());
 
-        // Queue connections are supported
+        // Manager
+        $manager = new Manager();
+        $this->assertSame($server, $server->uses($manager), 'Server should return the server after a call to uses() when using a Manager service.');
+        $this->assertSame($manager, $server->manager(), 'Server should set the server manager when using a Manager service.');
+
+        // Broker
+        $broker = new Broker();
+        $this->assertSame($server, $server->uses($broker), 'Server should return the server after a call to uses() when using a Broker service.');
+        $this->assertSame($broker, $server->broker(), 'Server should set the message broker when using a Broker service.');
+
+        // Queues
         $queue = new NullQueue();
         $this->assertSame($server, $server->uses($queue, 'foo'), 'Server should return the server after a call to uses() when using a Queue service.');
         $this->assertSame($queue, $server->connector(), 'Server should set the queue connection when using a Queue service.');
@@ -220,13 +231,51 @@ class ServerTest extends TestCase
         $this->assertSame('foo', $server->queue(), 'Server should set the queue name when using a Queue service.');
         $this->assertSame('foo', $server->manager()->queue(), 'Server should set the queue name on the manager when using a Queue service.');
 
+        // Logger
         $logger = new NullOutput();
-        $this->assertSame($server, $server->uses($logger), 'Server should return the server a call to uses() when using a Logger service.');
+        $this->assertSame($server, $server->uses($logger), 'Server should return the server after a call to uses() when using a Logger service.');
         $this->assertSame($logger, $server->logger(), 'Server should set the logger interface when using a Logger service.');
         $this->assertSame($logger, $server->broker()->logger(), 'Server should set the logger interface on the broker when using a Logger service.');
 
-        // Unsupported services should throw and exception
-        $this->expectException(InvalidArgumentException::class);
-        $server->uses(new StdClass());
+        // WebSocket
+        $websocket = new WsServer($broker);
+        $this->assertSame($server, $server->uses($websocket), 'Server should return the server after a call to uses() when using a Websocket service.');
+        $this->assertSame($websocket, $server->websocket(), 'Server should set the websocket server when using a Websocket service.');
+
+        // HTTP
+        $http = new HttpServer(Mockery::mock($websocket));
+        $this->assertSame($server, $server->uses($http), 'Server should return the server after a call to uses() when using an HTTP service.');
+        $this->assertSame($http, $server->http(), 'Server should set the HTTP server when using an HTTP service.');
+
+        // Socket
+        $loop = LoopFactory::create();
+        $socket = new IoServer($http, new Reactor($loop), $loop);
+        $this->assertSame($server, $server->uses($socket), 'Server should return the server after a call to uses() when using a Socket service.');
+        $this->assertSame($socket, $server->socket(), 'Server should set the socket when using a Socket service.');
+
+        // Event Loop
+        $this->assertSame($server, $server->uses($loop), 'Server should return the server after a call to uses() when using a Loop service.');
+        $this->assertSame($loop, $server->loop(), 'Server should set the event loop when using a Loop service.');
+        $this->assertSame($loop, $server->socket()->loop, 'Server should set the loop on the Socket service when using a Loop service.');
+
+        // Config
+        $settingsArray = ['foo' => 'bar'];
+        $settingsArrayable = ['bar' => 'foo'];
+        $config = new Fluent($settingsArrayable);
+        $this->assertSame($server, $server->uses($settingsArray), 'Server should return the server after a call to uses() when using a Config array.');
+        $this->assertSame($settingsArray, $server->config(), 'Server should set the config when using a Config array.');
+        $this->assertSame($settingsArrayable, $server->uses($config)->config(), 'Server should use an Arrayable object in the same way an array would be set as a Config array.');
+        $this->assertArraySubset($settingsArray, $server->uses('foo', 'bar')->config(), 'Server should use a key-value Config when passing a string as the first argument to uses() method.');
+
+        // Unsupported services should throw exceptions
+        $exceptions = 0;
+        foreach ([new StdClass(), StdClass::class, 'foo'] as $service) {
+            try {
+                $server->uses($service);
+            } catch (InvalidArgumentException $e) {
+                ++$exceptions;
+            }
+        }
+        $this->assertEquals(3, $exceptions, 'Server should throw InvalidArgumentException if the class does not exist, is not supported, or is being used as a string key without a value.');
     }
 }

@@ -7,6 +7,7 @@ use ArtisanSDK\Server\Contracts\Manager as ManagerInterface;
 use ArtisanSDK\Server\Contracts\Server as ServerInterface;
 use ArtisanSDK\Server\Traits\FluentProperties;
 use Illuminate\Contracts\Queue\Queue;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\Queue as QueueManager;
 use InvalidArgumentException;
 use Ratchet\Http\HttpServer;
@@ -210,6 +211,8 @@ class Server implements ServerInterface
      *          uses(\Ratchet\Server\IoServer $socket) to set I/O socket
      *          uses(\React\EventLoop\LoopInterface $loop) to set event loop
      *          uses(array $config) to set the configuration settings
+     *          uses(Arrayable $config) to set the configuration settings
+     *          uses($classname, $arg1, ... $argN) to resolve and then use the service
      *
      * @param mixed $service
      *
@@ -251,8 +254,23 @@ class Server implements ServerInterface
             return $this->loop($service);
         }
 
+        if ($service instanceof Arrayable) {
+            return $this->config($service->toArray());
+        }
+
         if (is_array($service)) {
             return $this->config($service);
+        }
+
+        if (is_string($service)) {
+            $arguments = array_slice(func_get_args(), 1);
+            if (class_exists($service)) {
+                return $this->uses(app($service, $arguments));
+            }
+            if (count($arguments) > 0) {
+                return $this->config($service, head($arguments));
+            }
+            throw new InvalidArgumentException($service.' is not a class name and uses() should be called with more arguments to use '.$service.' as a config key.');
         }
 
         throw new InvalidArgumentException(get_class($service).' is not a supported service.');
