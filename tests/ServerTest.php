@@ -2,16 +2,21 @@
 
 namespace ArtisanSDK\Server\Tests;
 
+use ArtisanSDK\Server\Broker;
 use ArtisanSDK\Server\Contracts\Broker as BrokerInterface;
 use ArtisanSDK\Server\Contracts\Manager as ManagerInterface;
 use ArtisanSDK\Server\Contracts\Server as ServerInterface;
 use ArtisanSDK\Server\Manager;
 use ArtisanSDK\Server\Server;
+use Illuminate\Queue\NullQueue;
+use InvalidArgumentException;
 use Mockery;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 use React\EventLoop\LoopInterface;
+use StdClass;
+use Symfony\Component\Console\Output\NullOutput;
 
 class ServerTest extends TestCase
 {
@@ -196,5 +201,32 @@ class ServerTest extends TestCase
         $this->assertSame('secret', $server->password('secret')->password(), 'Server should support the password key.');
         $this->assertSame(100, $server->maxConnections(100)->maxConnections(), 'Server should support the max_connections key.');
         $this->assertArraySubset(['max_connections' => 100], $server->config(), 'Server should camel cased dynamic config methods to snake cased config keys.');
+    }
+
+    /**
+     * Test that server supports setting services using the uses() method.
+     */
+    public function testServerUsesSupportedServices()
+    {
+        $server = new Server();
+        $server->manager(new Manager());
+        $server->broker(new Broker());
+
+        // Queue connections are supported
+        $queue = new NullQueue();
+        $this->assertSame($server, $server->uses($queue, 'foo'), 'Server should return the server after a call to uses() when using a Queue service.');
+        $this->assertSame($queue, $server->connector(), 'Server should set the queue connection when using a Queue service.');
+        $this->assertSame($queue, $server->manager()->connector(), 'Server should set the queue connection on the manager when using a Queue service.');
+        $this->assertSame('foo', $server->queue(), 'Server should set the queue name when using a Queue service.');
+        $this->assertSame('foo', $server->manager()->queue(), 'Server should set the queue name on the manager when using a Queue service.');
+
+        $logger = new NullOutput();
+        $this->assertSame($server, $server->uses($logger), 'Server should return the server a call to uses() when using a Logger service.');
+        $this->assertSame($logger, $server->logger(), 'Server should set the logger interface when using a Logger service.');
+        $this->assertSame($logger, $server->broker()->logger(), 'Server should set the logger interface on the broker when using a Logger service.');
+
+        // Unsupported services should throw and exception
+        $this->expectException(InvalidArgumentException::class);
+        $server->uses(new StdClass());
     }
 }

@@ -11,6 +11,7 @@
         "illuminate/contracts": "~5.4",
         "illuminate/config": "~5.4",
         "illuminate/container": "~5.4",
+        "illuminate/queue": "~5.4",
         "illuminate/support": "~5.4",
         "ramsey/uuid": "~3.5",
         "react/child-process": "~0.4.3",

@@ -296,7 +296,7 @@ class Server implements ServerInterface
     public function connector(Queue $instance = null)
     {
         if ( ! is_null($instance)) {
-            $this->manager->connector($instance);
+            $this->manager()->connector($instance);
 
             return $this;
         }
