@@ -169,7 +169,7 @@ class Server implements ServerInterface
      */
     public function port($number = null)
     {
-        return $this->config(__FUNCTION__, $number);
+        return $this->config(__FUNCTION__, is_null($number) ? $number : (int) $number);
     }
 
     /**
