@@ -166,4 +166,35 @@ class ServerTest extends TestCase
 
         $this->assertNull($server->stop(), 'Server should return nothing after a call to stop() so that stop is the last call in the chain.');
     }
+
+    /**
+     * Test that server implements a fluent array for config values.
+     */
+    public function testConfigIsFluent()
+    {
+        $server = new Server();
+
+        $this->assertSame($server->address(), $server->config('address'), 'Server should return the same config value for address as the address() method does.');
+        $this->assertSame($server->port(), $server->config('port'), 'Server should return the same config value for port as the port() method does.');
+        $this->assertSame(['address' => '0.0.0.0', 'port' => 8080], $server->config(), 'Server should return the default settings when calling config() without any arguments.');
+        $this->assertSame($server, $server->config('address', '127.0.0.1'), 'Server should return the server after a call to config() with arguments so that fluent chaining can continue.');
+
+        // Setting an array of config values should overset existing keys and values
+        $config = ['address' => '127.0.0.1', 'port' => 8081];
+        $this->assertEmpty($server->config([])->config(), 'Server should overset all config values when passing an empty array to config() method.');
+        $this->assertSame($config, $server->config($config)->config(), 'Server should overset all config values when passing an array to config() method.');
+
+        // Setting a key and value should get that key and value
+        $this->assertSame('bar', $server->config('foo', 'bar')->config('foo'), 'Server should set the value when config($key, $value) is called and should get the value when config($key) is called.');
+
+        // Config should allow dot array style keys
+        $this->assertArraySubset(['foo' => ['bar' => true]], $server->config('foo.bar', true)->config(), 'Server should support a deeply nested config value to be set using dot array style keys.');
+        $this->assertTrue($server->config('foo.bar'), 'Server should allow dot array style keys when getting deeply nested values.');
+
+        // Ensure that magic calls dynamically get and set config values
+        $this->assertSame('foo', $server->bar('foo')->bar(), 'Server should forward all undefined method calls to config() to get and set values dynamically.');
+        $this->assertSame('secret', $server->password('secret')->password(), 'Server should support the password key.');
+        $this->assertSame(100, $server->maxConnections(100)->maxConnections(), 'Server should support the max_connections key.');
+        $this->assertArraySubset(['max_connections' => 100], $server->config(), 'Server should camel cased dynamic config methods to snake cased config keys.');
+    }
 }
