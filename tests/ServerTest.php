@@ -269,7 +269,13 @@ class ServerTest extends TestCase
 
         // Unsupported services should throw exceptions
         $exceptions = 0;
-        foreach ([new StdClass(), StdClass::class, 'foo'] as $service) {
+        $services = [
+            new StdClass(),  // test objects that exist throw exceptions because they are not supported
+            StdClass::class, // test strings for classes that exist are instantiated and used but throw exceptions because they are not supported
+            'foo',           // test keys without values throw exceptions
+            Manager::class,  // test strings for classes that exist are instantiated and used without exception
+        ];
+        foreach ($services as $service) {
             try {
                 $server->uses($service);
             } catch (InvalidArgumentException $e) {
