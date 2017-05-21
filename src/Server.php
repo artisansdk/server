@@ -212,6 +212,7 @@ class Server implements ServerInterface
      *          uses(\React\EventLoop\LoopInterface $loop) to set event loop
      *          uses(array $config) to set the configuration settings
      *          uses(Arrayable $config) to set the configuration settings
+     *          uses($key, $value) to set the configuration key-value pair
      *          uses($classname, $arg1, ... $argN) to resolve and then use the service
      *
      * @param mixed $service

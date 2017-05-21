@@ -8,7 +8,9 @@ use ArtisanSDK\Server\Contracts\Manager as ManagerInterface;
 use ArtisanSDK\Server\Contracts\Server as ServerInterface;
 use ArtisanSDK\Server\Manager;
 use ArtisanSDK\Server\Server;
+use Illuminate\Contracts\Queue\Queue as QueueInterface;
 use Illuminate\Queue\NullQueue;
+use Illuminate\Support\Facades\Queue as QueueManager;
 use Illuminate\Support\Fluent;
 use InvalidArgumentException;
 use Mockery;
@@ -270,9 +272,9 @@ class ServerTest extends TestCase
         // Unsupported services should throw exceptions
         $exceptions = 0;
         $services = [
+            'foo',           // test keys without values throw exceptions
             new StdClass(),  // test objects that exist throw exceptions because they are not supported
             StdClass::class, // test strings for classes that exist are instantiated and used but throw exceptions because they are not supported
-            'foo',           // test keys without values throw exceptions
             Manager::class,  // test strings for classes that exist are instantiated and used without exception
         ];
         foreach ($services as $service) {
@@ -283,5 +285,49 @@ class ServerTest extends TestCase
             }
         }
         $this->assertEquals(3, $exceptions, 'Server should throw InvalidArgumentException if the class does not exist, is not supported, or is being used as a string key without a value.');
+    }
+
+    /**
+     * Test that server can use queues as a bridge between realtime and offline processing.
+     */
+    public function testUsesQueueCanCreateConnection()
+    {
+        QueueManager::fake();
+        $server = new Server();
+        $server->manager(new Manager());
+        $queue = new NullQueue();
+
+        $this->assertSame($server, $server->usesQueue($queue), 'Server should return the server after a call to usesQueue().');
+        $this->assertSame($queue, $server->connector(), 'Server should set the queue as the connection when using usesQueue().');
+        $this->assertInstanceOf(QueueInterface::class, $server->usesQueue('null')->connector(), 'Server should make a connector for the driver passed as an argument to usesQueue($driver).');
+        $this->assertSame('foo', $server->usesQueue($queue, 'foo')->queue(), 'Server should set the queue name when a second argument is provided to usesQueue.');
+    }
+
+    /**
+     * Test that server fluently gets and sets the connector on the Manager.
+     */
+    public function testConnectorIsFluent()
+    {
+        $server = new Server();
+        $server->manager(new Manager());
+        $queue = new NullQueue();
+
+        $this->assertSame($server, $server->connector($queue), 'Server should return the server after a call to connector($queue).');
+        $this->assertSame($queue, $server->connector(), 'Server should set the queue connection when using connector($queue).');
+        $this->assertSame($queue, $server->manager()->connector(), 'Server should set the queue connection on the manager when using connector($queue).');
+    }
+
+    /**
+     * Test that server fluently gets and sets the queue on the Manager.
+     */
+    public function testQueueIsFluent()
+    {
+        $server = new Server();
+        $server->manager(new Manager());
+        $name = 'foo';
+
+        $this->assertSame($server, $server->queue($name), 'Server should return the server after a call to queue($name).');
+        $this->assertSame($name, $server->queue(), 'Server should set the queue name when using queue($name).');
+        $this->assertSame($name, $server->manager()->queue(), 'Server should set the queue name on the manager when using queue($name).');
     }
 }
