@@ -60,7 +60,8 @@ class ServerTest extends TestCase
 
         // Server should make new instances for different bindings.
         $this->config->set('server.port', 8081);
-        $this->assertNotSame($server, Server::make());
+        $server2 = Server::make();
+        $this->assertNotSame($server, $server2);
 
         // Looks like a server
         $this->assertInstanceOf(ServerInterface::class, $server, 'Server should implement Server interface.');
@@ -71,6 +72,10 @@ class ServerTest extends TestCase
         $this->assertInstanceOf(IoServer::class, $server->socket(), 'Server should be a Socket server.');
         $this->assertInstanceOf(LoopInterface::class, $server->loop(), 'Server should implement an event loop.');
         $this->assertCount(2, $server->bindings(), 'Server bindings should be [address, port].');
+
+        // Tear down running sockets
+        $server->socket()->socket->shutdown();
+        $server2->socket()->socket->shutdown();
     }
 
     /**
@@ -78,11 +83,22 @@ class ServerTest extends TestCase
      */
     public function testInstanceOfServer()
     {
+        // Mock method should set a mock instance that can be returned
+        $mock = Mockery::mock(ServerInterface::class);
         $server = new Server();
+        $server->mock($mock);
+
+        $this->assertSame($mock, $server->instance(), 'Server should return the instance of the server when instance() is called without any arguments.');
+
+        // Instance should call to make() if no instance is running
+        $server->mock(null);
         $instance = $server->instance();
 
         $this->assertInstanceOf(ServerInterface::class, $instance, 'Server should implement Server interface.');
         $this->assertSame($instance, $instance->instance(), 'Server should be a singleton.');
+
+        // Tear down running sockets
+        $instance->socket()->socket->shutdown();
     }
 
     /**
@@ -297,7 +313,7 @@ class ServerTest extends TestCase
         $server->manager(new Manager());
         $queue = new NullQueue();
 
-        $this->assertSame($server, $server->usesQueue($queue), 'Server should return the server after a call to usesQueue().');
+        $this->assertSame($server, $server->usesQueue($queue), 'Server should return the server after a call to usesQueue() to continue fluent chaining.');
         $this->assertSame($queue, $server->connector(), 'Server should set the queue as the connection when using usesQueue().');
         $this->assertInstanceOf(QueueInterface::class, $server->usesQueue('null')->connector(), 'Server should make a connector for the driver passed as an argument to usesQueue($driver).');
         $this->assertSame('foo', $server->usesQueue($queue, 'foo')->queue(), 'Server should set the queue name when a second argument is provided to usesQueue.');
@@ -312,7 +328,7 @@ class ServerTest extends TestCase
         $server->manager(new Manager());
         $queue = new NullQueue();
 
-        $this->assertSame($server, $server->connector($queue), 'Server should return the server after a call to connector($queue).');
+        $this->assertSame($server, $server->connector($queue), 'Server should return the server after a call to connector($queue) to continue fluent chaining.');
         $this->assertSame($queue, $server->connector(), 'Server should set the queue connection when using connector($queue).');
         $this->assertSame($queue, $server->manager()->connector(), 'Server should set the queue connection on the manager when using connector($queue).');
     }
@@ -326,8 +342,114 @@ class ServerTest extends TestCase
         $server->manager(new Manager());
         $name = 'foo';
 
-        $this->assertSame($server, $server->queue($name), 'Server should return the server after a call to queue($name).');
+        $this->assertSame($server, $server->queue($name), 'Server should return the server after a call to queue($name) to continue fluent chaining.');
         $this->assertSame($name, $server->queue(), 'Server should set the queue name when using queue($name).');
         $this->assertSame($name, $server->manager()->queue(), 'Server should set the queue name on the manager when using queue($name).');
+    }
+
+    /**
+     * Test that server fluently gets and sets the logger on the Socket.
+     */
+    public function testLoggerIsFluent()
+    {
+        $server = new Server();
+        $server->broker(new Broker());
+        $this->assertNull($server->logger(), 'Server should allow for an optional logger on the Broker service.');
+
+        $logger = new NullOutput();
+
+        $this->assertSame($server, $server->logger($logger), 'Server should return the server after a call to logger($logger) to continue fluent chaining.');
+        $this->assertSame($logger, $server->logger(), 'Server should set the logger interface when using logger($logger).');
+        $this->assertSame($logger, $server->broker()->logger(), 'Server should set the logger interface on the broker when using logger($logger).');
+    }
+
+    /**
+     * Test that server fluently gets and sets the manager class.
+     */
+    public function testManagerIsFluent()
+    {
+        $server = new Server();
+        $manager = new Manager();
+
+        $this->assertNull($server->manager(), 'Server should not have a default manager set.');
+        $this->assertSame($server, $server->manager($manager), 'Server should return the server after a call to manager($manager) to continue fluent chaining.');
+        $this->assertSame($manager, $server->manager(), 'Server should set the manager interface when using manager($manager).');
+    }
+
+    /**
+     * Test that server fluently gets and sets the manager class.
+     */
+    public function testBrokerIsFluent()
+    {
+        $server = new Server();
+        $broker = new Broker();
+
+        $this->assertNull($server->broker(), 'Server should not have a default broker set.');
+        $this->assertSame($server, $server->broker($broker), 'Server should return the server after a call to broker($broker) to continue fluent chaining.');
+        $this->assertSame($broker, $server->broker(), 'Server should set the broker interface when using broker($broker).');
+    }
+
+    /**
+     * Test that server fluently gets and sets the websocket class.
+     */
+    public function testWebsocketIsFluent()
+    {
+        $server = new Server();
+        $broker = new Broker();
+        $websocket = new WsServer($broker);
+
+        $this->assertNull($server->websocket(), 'Server should not have a default websocket set.');
+        $this->assertSame($server, $server->websocket($websocket), 'Server should return the server after a call to websocket($websocket) to continue fluent chaining.');
+        $this->assertSame($websocket, $server->websocket(), 'Server should set the websocket interface when using websocket($websocket).');
+    }
+
+    /**
+     * Test that server fluently gets and sets the HTTP class.
+     */
+    public function testHttpIsFluent()
+    {
+        $server = new Server();
+        $broker = new Broker();
+        $websocket = new WsServer($broker);
+        $http = new HttpServer(Mockery::mock($websocket));
+
+        $this->assertNull($server->http(), 'Server should not have a default http set.');
+        $this->assertSame($server, $server->http($http), 'Server should return the server after a call to http($http) to continue fluent chaining.');
+        $this->assertSame($http, $server->http(), 'Server should set the http interface when using http($http).');
+    }
+
+    /**
+     * Test that server fluently gets and sets the socket class.
+     */
+    public function testSocketIsFluent()
+    {
+        $server = new Server();
+        $broker = new Broker();
+        $websocket = new WsServer($broker);
+        $http = new HttpServer(Mockery::mock($websocket));
+        $loop = LoopFactory::create();
+        $socket = new IoServer($http, new Reactor($loop), $loop);
+
+        $this->assertNull($server->socket(), 'Server should not have a default socket set.');
+        $this->assertSame($server, $server->socket($socket), 'Server should return the server after a call to socket($socket) to continue fluent chaining.');
+        $this->assertSame($socket, $server->socket(), 'Server should set the socket interface when using socket($socket).');
+    }
+
+    /**
+     * Test that server fluently gets and sets the event loop on the Socket.
+     */
+    public function testLoopIsFluent()
+    {
+        $this->config->set('server.port', 8082);
+        $server = Server::make();
+
+        $this->assertInstanceOf(LoopInterface::class, $server->loop(), 'Server should return a LoopInterface when calling loop() without arguments.');
+        $this->assertSame($server->loop(), $server->socket()->loop, 'Server should set the loop on the Socket interface.');
+
+        $loop = clone $server->loop();
+
+        $this->assertSame($server, $server->loop($loop), 'Server should return the server after a call to loop($loop) to continue fluent chaining.');
+        $this->assertSame($loop, $server->loop(), 'Server should set the event loop when using loop($loop).');
+        $this->assertSame($loop, $server->socket()->loop, 'Server should set the event loop on the Socket interface.');
     }
 }

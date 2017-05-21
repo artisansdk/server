@@ -24,7 +24,6 @@ class Server implements ServerInterface
     protected $connector;
     protected $http;
     protected $manager;
-    protected $output;
     protected $socket;
     protected $websocket;
     protected static $instance;
@@ -62,7 +61,7 @@ class Server implements ServerInterface
      */
     public static function instance()
     {
-        if ( ! self::$instance instanceof self) {
+        if ( ! self::$instance instanceof ServerInterface) {
             self::make();
         }
 
@@ -476,5 +475,15 @@ class Server implements ServerInterface
         array_unshift($args, snake_case($method));
 
         return call_user_func_array([$this, 'config'], $args);
+    }
+
+    /**
+     * Mock the instance of the server.
+     *
+     * @param \ArtisanSDK\Server\Contracts\Server $instance
+     */
+    public static function mock($instance)
+    {
+        static::$instance = $instance;
     }
 }
