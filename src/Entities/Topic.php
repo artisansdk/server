@@ -2,7 +2,7 @@
 
 namespace ArtisanSDK\Server\Entities;
 
-use ArtisanSDK\Server\Contracts\Connection;
+use ArtisanSDK\Server\Contracts\Connection as ConnectionInterface;
 use ArtisanSDK\Server\Contracts\Topic as TopicInterface;
 use ArtisanSDK\Server\Traits\FluentProperties;
 use ArtisanSDK\Server\Traits\JsonHelpers;
@@ -84,7 +84,7 @@ class Topic implements TopicInterface, Arrayable, Jsonable, JsonSerializable
      *
      * @return self
      */
-    public function subscribe(Connection $connection)
+    public function subscribe(ConnectionInterface $connection)
     {
         $this->subscriptions()->put($connection->uuid(), $connection);
 
@@ -98,7 +98,7 @@ class Topic implements TopicInterface, Arrayable, Jsonable, JsonSerializable
      *
      * @return self
      */
-    public function unsubscribe(Connection $connection)
+    public function unsubscribe(ConnectionInterface $connection)
     {
         $this->subscriptions()->forget($connection->uuid());
 

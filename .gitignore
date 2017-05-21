@@ -15,7 +15,7 @@
 /.idea
 /.ssh/
 /.vagrant
-/coverage/
+/reports/
 /Vagrantfile
 /vendor/
 composer.lock

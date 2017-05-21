@@ -3,7 +3,7 @@
 namespace ArtisanSDK\Server\Entities;
 
 use ArtisanSDK\Server\Contracts\ShouldAutoStart;
-use ArtisanSDK\Server\Contracts\Timer;
+use ArtisanSDK\Server\Contracts\Timer as TimerInterface;
 use Illuminate\Support\Collection;
 
 class Timers extends Collection
@@ -15,7 +15,7 @@ class Timers extends Collection
      *
      * @return self
      */
-    public function add(Timer $timer)
+    public function add(TimerInterface $timer)
     {
         $this->push($timer);
 
@@ -33,7 +33,7 @@ class Timers extends Collection
      *
      * @return self
      */
-    public function remove(Timer $timer)
+    public function remove(TimerInterface $timer)
     {
         $timer->stop();
 

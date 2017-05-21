@@ -2,7 +2,7 @@
 
 namespace ArtisanSDK\Server\Entities;
 
-use ArtisanSDK\Server\Contracts\Process;
+use ArtisanSDK\Server\Contracts\Process as ProcessInterface;
 use Illuminate\Support\Collection;
 
 class Processes extends Collection
@@ -14,7 +14,7 @@ class Processes extends Collection
      *
      * @return self
      */
-    public function add(Process $process)
+    public function add(ProcessInterface $process)
     {
         $this->push($process);
 
@@ -28,7 +28,7 @@ class Processes extends Collection
      *
      * @return self
      */
-    public function remove(Process $process)
+    public function remove(ProcessInterface $process)
     {
         $index = array_search($process, $this->items, $strict = true);
         if ($index === false) {

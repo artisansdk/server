@@ -20,9 +20,8 @@
         </whitelist>
     </filter>
     <logging>
-        <log type="coverage-clover" target="./coverage/logs/clover.xml"/>
-        <log type="coverage-html" target="./coverage/coverage" charset="UTF-8" yui="true" highlight="true"/>
-        <log type="coverage-text" target="./coverage/coverage.txt"/>
-        <log type="junit" target="./coverage/report.junit.xml"/>
+        <log type="coverage-html" target="./reports/coverage" charset="UTF-8" yui="true" highlight="true"/>
+        <log type="coverage-text" target="./reports/coverage.txt"/>
+        <log type="junit" target="./reports/report.xml"/>
     </logging>
 </phpunit>

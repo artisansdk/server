@@ -2,10 +2,10 @@
 
 namespace ArtisanSDK\Server\Entities;
 
-use ArtisanSDK\Server\Contracts\Connection;
+use ArtisanSDK\Server\Contracts\Connection as ConnectionInterface;
 use ArtisanSDK\Server\Traits\UUIDFilter;
 use Illuminate\Support\Collection;
-use Ratchet\ConnectionInterface;
+use Ratchet\ConnectionInterface as WebsocketInterface;
 
 class Connections extends Collection
 {
@@ -18,7 +18,7 @@ class Connections extends Collection
      *
      * @return self
      */
-    public function add(Connection $connection)
+    public function add(ConnectionInterface $connection)
     {
         $this->put($connection->uuid(), $connection);
 
@@ -32,7 +32,7 @@ class Connections extends Collection
      *
      * @return self
      */
-    public function remove(Connection $connection)
+    public function remove(ConnectionInterface $connection)
     {
         $this->forget($connection->uuid(), $connection);
 
@@ -90,7 +90,7 @@ class Connections extends Collection
      *
      * @return \ArtisanSDK\Server\Contracts\Connection|null
      */
-    public function socket(ConnectionInterface $socket)
+    public function socket(WebsocketInterface $socket)
     {
         return $this->first(function ($connection) use ($socket) {
             return $connection->socket() === $socket;

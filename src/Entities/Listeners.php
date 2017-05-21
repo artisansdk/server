@@ -2,9 +2,9 @@
 
 namespace ArtisanSDK\Server\Entities;
 
-use ArtisanSDK\Server\Contracts\Command;
-use ArtisanSDK\Server\Contracts\Listener;
-use ArtisanSDK\Server\Contracts\Message;
+use ArtisanSDK\Server\Contracts\Command as CommandInterface;
+use ArtisanSDK\Server\Contracts\Listener as ListenerInterface;
+use ArtisanSDK\Server\Contracts\Message as MessageInterface;
 use Illuminate\Support\Collection;
 
 class Listeners extends Collection
@@ -16,7 +16,7 @@ class Listeners extends Collection
      *
      * @return self
      */
-    public function add(Listener $listener)
+    public function add(ListenerInterface $listener)
     {
         $this->push($listener);
 
@@ -30,7 +30,7 @@ class Listeners extends Collection
      *
      * @return self
      */
-    public function remove(Listener $listener)
+    public function remove(ListenerInterface $listener)
     {
         $index = array_search($listener, $this->items, $strict = true);
         if ($index === false) {
@@ -47,7 +47,7 @@ class Listeners extends Collection
      *
      * @return self
      */
-    public function forMessage(Message $message)
+    public function forMessage(MessageInterface $message)
     {
         return $this->filter(function ($listener) use ($message) {
             return $listener->commands($message)->count();
@@ -61,7 +61,7 @@ class Listeners extends Collection
      *
      * @return self
      */
-    public function forCommand(Command $command)
+    public function forCommand(CommandInterface $command)
     {
         return $this->filter(function ($listener) use ($command) {
             return $listener->messages($command)->count();
@@ -75,7 +75,7 @@ class Listeners extends Collection
      *
      * @return self
      */
-    public function handle(Message $message)
+    public function handle(MessageInterface $message)
     {
         return $this->forMessage($message)
             ->each(function ($listener) use ($message) {

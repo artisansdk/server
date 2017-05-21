@@ -2,7 +2,7 @@
 
 namespace ArtisanSDK\Server\Entities;
 
-use ArtisanSDK\Server\Contracts\Command;
+use ArtisanSDK\Server\Contracts\Command as CommandInterface;
 use Illuminate\Support\Collection;
 
 class Commands extends Collection
@@ -14,7 +14,7 @@ class Commands extends Collection
      *
      * @return self
      */
-    public function add(Command $command)
+    public function add(CommandInterface $command)
     {
         $this->push($command);
 
@@ -28,7 +28,7 @@ class Commands extends Collection
      *
      * @return self
      */
-    public function remove(Command $command)
+    public function remove(CommandInterface $command)
     {
         $index = array_search($command, $this->items, $strict = true);
         if ($index === false) {

@@ -2,7 +2,7 @@
 
 namespace ArtisanSDK\Server\Entities;
 
-use ArtisanSDK\Server\Contracts\Topic;
+use ArtisanSDK\Server\Contracts\Topic as TopicInterface;
 use ArtisanSDK\Server\Traits\UUIDFilter;
 use Illuminate\Support\Collection;
 
@@ -17,7 +17,7 @@ class Topics extends Collection
      *
      * @return self
      */
-    public function add(Topic $topic)
+    public function add(TopicInterface $topic)
     {
         $this->put($topic->uuid(), $topic);
 
@@ -31,7 +31,7 @@ class Topics extends Collection
      *
      * @return self
      */
-    public function remove(Topic $topic)
+    public function remove(TopicInterface $topic)
     {
         $this->forget($topic->uuid(), $topic);
 

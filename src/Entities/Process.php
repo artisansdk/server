@@ -2,7 +2,7 @@
 
 namespace ArtisanSDK\Server\Entities;
 
-use ArtisanSDK\Server\Contracts\Manager;
+use ArtisanSDK\Server\Contracts\Manager as ManagerInterface;
 use ArtisanSDK\Server\Contracts\Process as ProcessInterface;
 use ArtisanSDK\Server\Traits\FluentProperties;
 use Exception;
@@ -61,7 +61,7 @@ abstract class Process implements ProcessInterface
      *
      * @return \ArtisanSDK\Server\Contracts\Manager|self
      */
-    public function dispatcher(Manager $instance = null)
+    public function dispatcher(ManagerInterface $instance = null)
     {
         return $this->property(__FUNCTION__, $instance);
     }
