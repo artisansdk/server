@@ -451,5 +451,7 @@ class ServerTest extends TestCase
         $this->assertSame($server, $server->loop($loop), 'Server should return the server after a call to loop($loop) to continue fluent chaining.');
         $this->assertSame($loop, $server->loop(), 'Server should set the event loop when using loop($loop).');
         $this->assertSame($loop, $server->socket()->loop, 'Server should set the event loop on the Socket interface.');
+
+        $server->socket()->socket->shutdown();
     }
 }
