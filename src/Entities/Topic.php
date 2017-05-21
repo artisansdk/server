@@ -22,10 +22,9 @@ class Topic implements TopicInterface, Arrayable, Jsonable, JsonSerializable
     /**
      * Instantiate the topic with the name.
      *
-     * @param string $name    of topic
-     * @param string $sponsor of topic
+     * @param string $name of topic
      */
-    public function __construct($name, $sponsor)
+    public function __construct($name)
     {
         $this->uuid(Uuid::uuid4()->toString());
         $this->name($name);

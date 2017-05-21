@@ -730,7 +730,7 @@ class Manager implements ManagerInterface
             ->execute($output);
 
         // Cascade the termination of one process to the other
-        $input->on('exit', function ($exitCode, $termSignal) use ($output) {
+        $input->on('exit', function () use ($output) {
             $this->terminate($output);
         });
 

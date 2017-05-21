@@ -127,9 +127,9 @@ class Listener implements ListenerInterface
 
         $messages = [];
         $collection->each(
-            function ($commands, $key) use (&$messages, $command) {
+            function ($commands) use (&$messages, $command) {
                 if ($commands->where($command)->count()) {
-                    $messages[] = $message;
+                    $messages[] = $command;
                 }
             });
 
@@ -183,7 +183,7 @@ class Listener implements ListenerInterface
         $this->checkType($command, CommandInterface::class);
 
         $commands = $this->handlers->get($message);
-        $command->pull($command);
+        $commands->pull($command);
 
         return $this;
     }

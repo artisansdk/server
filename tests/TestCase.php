@@ -24,7 +24,9 @@ class TestCase extends PHPUnit
      */
     public function createApplication()
     {
-        $this->app = Container::getInstance();
+        $this->app = new Container();
+        $this->app->setInstance($this->app);
+
         $this->app->singleton('config', function () {
             $server = require_once __DIR__.'/../config/server.php';
 

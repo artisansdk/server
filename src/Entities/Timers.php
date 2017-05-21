@@ -48,29 +48,48 @@ class Timers extends Collection
     /**
      * Filter timers to those that are active.
      *
-     * @param bool $include active timers
+     * @return self
+     */
+    public function active()
+    {
+        return $this->where(function ($timer) {
+            return $timer->started() && ! $timer->paused();
+        });
+    }
+
+    /**
+     * Filter timers to those that are inactive.
      *
      * @return self
      */
-    public function active($include = true)
+    public function inactive()
     {
-        return $this->where(function ($timer) use ($include) {
-            return $timer->started() === $include
-                && $timer->paused() !== $include;
+        return $this->where(function ($timer) {
+            return ! $timer->started() || $timer->paused();
         });
     }
 
     /**
      * Filter timers to those that are paused.
      *
-     * @param bool $include paused timers
+     * @return self
+     */
+    public function paused()
+    {
+        return $this->where(function ($timer) {
+            return $timer->paused();
+        });
+    }
+
+    /**
+     * Filter timers to those that are not paused.
      *
      * @return self
      */
-    public function paused($include = true)
+    public function unpaused()
     {
-        return $this->where(function ($timer) use ($include) {
-            return $timer->paused() === $include;
+        return $this->where(function ($timer) {
+            return ! $timer->paused();
         });
     }
 }

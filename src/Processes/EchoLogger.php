@@ -23,7 +23,7 @@ class EchoLogger extends Process
         });
 
         // Log when the process exits
-        $this->on('exit', function ($code, $signal) {
+        $this->on('exit', function ($code) {
             $this->log(__CLASS__.' exited ('.$code.') at: '.time());
 
             // Restart the process

@@ -41,15 +41,15 @@ trait RatchetAdapter
      * the Exception is sent back down the stack, handled by the Server and bubbled back up the application through this method.
      *
      * @param \Ratchet\ConnectionInterface $conn
-     * @param \Exception                   $e
+     * @param \Exception                   $exception
      *
      * @throws \Exception
      *
      * @return self
      */
-    public function onError(ConnectionInterface $conn, \Exception $e)
+    public function onError(ConnectionInterface $conn, \Exception $exception)
     {
-        $this->error($this->getConnectionForSocket($conn), $e);
+        $this->error($this->getConnectionForSocket($conn), $exception);
     }
 
     /**
