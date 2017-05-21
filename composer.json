@@ -21,7 +21,9 @@
         "friendsofphp/php-cs-fixer": "~2.2",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.7"
+        "phpmd/phpmd": "~2.6.0",
+        "phpunit/phpunit": "~5.7",
+        "sebastian/phpcpd": "~3.0.0"
     },
     "autoload": {
         "psr-4": {
@@ -42,7 +44,9 @@
         ],
         "test": [
             "vendor/bin/phpunit --colors=always",
-            "vendor/bin/php-cs-fixer fix -v --diff --dry-run;"
+            "vendor/bin/php-cs-fixer fix -v --diff --dry-run",
+            "vendor/bin/phpcpd src/ config/ tests/ --min-lines=3 --min-tokens=35",
+            "vendor/bin/phpmd \"src/,config/,tests/\" html codesize,cleancode,unusedcode,naming --reportfile reports/phpmd.html --ignore-violations-on-exit"
         ]
     },
     "config": {
