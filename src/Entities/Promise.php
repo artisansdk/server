@@ -26,7 +26,7 @@ abstract class Promise implements PromiseInterface
      */
     public function __construct()
     {
-        $this->canceler = function (, $reject) {
+        $this->canceler = function ($resolve, $reject) {
             $reject($this->canceled());
         };
 
