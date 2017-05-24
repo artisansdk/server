@@ -295,20 +295,15 @@ class Server implements ServerInterface
      *
      * @example resolveConnector() is equivalent to resolveConnector('default', 'default')
      *          resolveConnector($connection) to inject an existing connector
-     *          resolveConnector('beanstalkd') to use beanstalkd driver on default queue
-     *          resolveConnector('beanstalkd', 'server') to use beanstalkd driver on server queue
+     *          resolveConnector($connection, 'server') to use server queue
      *
-     * @param string|\Illuminate\Contracts\Queue\Queue $connection
+     * @param \Illuminate\Contracts\Queue\Queue $connection
      * @param string                                   $name
      *
      * @return self
      */
-    protected function resolveConnector($connection = null, $name = null)
+    protected function resolveConnector(QueueInterface $connection = null, $name = null)
     {
-        if ( ! $connection instanceof QueueInterface) {
-            $connection = QueueManager::connection($connection);
-        }
-
         $this->connector($connection);
         $this->queue($name);
 
