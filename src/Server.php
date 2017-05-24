@@ -6,7 +6,7 @@ use ArtisanSDK\Server\Contracts\Broker as BrokerInterface;
 use ArtisanSDK\Server\Contracts\Manager as ManagerInterface;
 use ArtisanSDK\Server\Contracts\Server as ServerInterface;
 use ArtisanSDK\Server\Traits\FluentProperties;
-use Illuminate\Contracts\Queue\Queue;
+use Illuminate\Contracts\Queue\Queue as QueueInterface;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\Queue as QueueManager;
 use InvalidArgumentException;
@@ -14,6 +14,7 @@ use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 use React\EventLoop\LoopInterface;
+use ReflectionClass;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Server implements ServerInterface
@@ -31,6 +32,17 @@ class Server implements ServerInterface
     protected $config = [
         'address' => '0.0.0.0',
         'port'    => 8080,
+    ];
+
+    protected $serviceMap = [
+        BrokerInterface::class  => 'broker',
+        HttpServer::class       => 'http',
+        IoServer::class         => 'socket',
+        LoopInterface::class    => 'loop',
+        ManagerInterface::class => 'manager',
+        OutputInterface::class  => 'logger',
+        QueueInterface::class   => 'resolveConnector',
+        WsServer::class         => 'websocket',
     ];
 
     /**
@@ -123,15 +135,18 @@ class Server implements ServerInterface
      */
     public function config($key = null, $value = null)
     {
+        // Replace the entire config
         if (is_array($key)) {
             return $this->property(__FUNCTION__, $key);
-        }
+        } elseif ($key instanceof Arrayable) {
+            return $this->property(__FUNCTION__, $key->toArray());
 
-        if (is_string($key) && is_null($value)) {
+        // Get the value for the key
+        } elseif (is_string($key) && is_null($value)) {
             return array_get($this->property(__FUNCTION__), $key);
-        }
 
-        if (is_string($key) && ! is_null($value)) {
+        // Set the value for the key
+        } elseif (is_string($key) && ! is_null($value)) {
             $config = $this->config();
             array_set($config, $key, $value);
             $this->config($config);
@@ -139,6 +154,7 @@ class Server implements ServerInterface
             return $this;
         }
 
+        // Get the entire config
         return $this->property(__FUNCTION__);
     }
 
@@ -209,8 +225,7 @@ class Server implements ServerInterface
      *          uses(\Ratchet\Http\HttpServer $server) to set HTTP server
      *          uses(\Ratchet\Server\IoServer $socket) to set I/O socket
      *          uses(\React\EventLoop\LoopInterface $loop) to set event loop
-     *          uses(array $config) to set the configuration settings
-     *          uses(Arrayable $config) to set the configuration settings
+     *          uses(array|Arrayable $config) to set the configuration settings
      *          uses($key, $value) to set the configuration key-value pair
      *          uses($classname, $arg1, ... $argN) to resolve and then use the service
      *
@@ -222,55 +237,54 @@ class Server implements ServerInterface
      */
     public function uses($service)
     {
-        if ($service instanceof Queue) {
-            return call_user_func_array([$this, 'usesQueue'], func_get_args());
-        }
+        $arguments = array_slice(func_get_args(), 1);
 
-        if ($service instanceof OutputInterface) {
-            return $this->logger($service);
-        }
-
-        if ($service instanceof ManagerInterface) {
-            return $this->manager($service);
-        }
-
-        if ($service instanceof BrokerInterface) {
-            return $this->broker($service);
-        }
-
-        if ($service instanceof WsServer) {
-            return $this->websocket($service);
-        }
-
-        if ($service instanceof HttpServer) {
-            return $this->http($service);
-        }
-
-        if ($service instanceof IoServer) {
-            return $this->socket($service);
-        }
-
-        if ($service instanceof LoopInterface) {
-            return $this->loop($service);
-        }
-
-        if ($service instanceof Arrayable) {
-            return $this->config($service->toArray());
-        }
-
-        if (is_array($service)) {
+        // Resolve array like service as config
+        if ($service instanceof Arrayable || is_array($service)) {
             return $this->config($service);
+
+        // Use service as key and arguments as value in config
+        } elseif (count($arguments) > 0 && is_string($service)) {
+            return $this->config($service, head($arguments));
+
+        // Resolve service class to supported service
+        } elseif (is_object($service)) {
+            return $this->resolveService($service, $arguments);
+
+        // Resolve service name to supported service
+        } elseif (is_string($service) && class_exists($service)) {
+            return $this->resolveService(app($service, $arguments));
         }
 
-        if (is_string($service)) {
-            $arguments = array_slice(func_get_args(), 1);
-            if (class_exists($service)) {
-                return $this->uses(app($service, $arguments));
+        throw new InvalidArgumentException($service.' is not a resolvable class. The uses() method should be called with two arguments to use '.$service.' as a config key.');
+    }
+
+    /**
+     * Resolve the service using a service map.
+     *
+     * @param object $service
+     * @param array  $arguments
+     *
+     * @throws \InvalidArgumentException if service is not supported
+     *
+     * @return self
+     */
+    protected function resolveService($service, $arguments = [])
+    {
+        // Get the implementation instances of the service
+        $reflection = new ReflectionClass($service);
+        $instances = array_merge([$reflection->getName()], $reflection->getInterfaceNames());
+        while ($instance = $reflection->getParentClass()) {
+            $instances[] = $instance->getName();
+            $reflection = $instance;
+        }
+
+        // Check if a service implementation is in the service map
+        foreach ($instances as $instance) {
+            $concrete = array_get($this->serviceMap, $instance);
+            if ($concrete && $service instanceof $instance) {
+                return call_user_func_array([$this, $concrete], array_merge([$service], $arguments));
             }
-            if (count($arguments) > 0) {
-                return $this->config($service, head($arguments));
-            }
-            throw new InvalidArgumentException($service.' is not a class name and uses() should be called with more arguments to use '.$service.' as a config key.');
         }
 
         throw new InvalidArgumentException(get_class($service).' is not a supported service.');
@@ -279,19 +293,19 @@ class Server implements ServerInterface
     /**
      * Set the queue the server processes.
      *
-     * @example usesQueue() is equivalent to usesQueue('default', 'default')
-     *          usesQueue($connection) to inject an existing connector
-     *          usesQueue('beanstalkd') to use beanstalkd driver on default queue
-     *          usesQueue('beanstalkd', 'server') to use beanstalkd driver on server queue
+     * @example resolveConnector() is equivalent to resolveConnector('default', 'default')
+     *          resolveConnector($connection) to inject an existing connector
+     *          resolveConnector('beanstalkd') to use beanstalkd driver on default queue
+     *          resolveConnector('beanstalkd', 'server') to use beanstalkd driver on server queue
      *
      * @param string|\Illuminate\Contracts\Queue\Queue $connection
      * @param string                                   $name
      *
      * @return self
      */
-    public function usesQueue($connection = null, $name = null)
+    protected function resolveConnector($connection = null, $name = null)
     {
-        if ( ! $connection instanceof Queue) {
+        if ( ! $connection instanceof QueueInterface) {
             $connection = QueueManager::connection($connection);
         }
 
@@ -311,7 +325,7 @@ class Server implements ServerInterface
      *
      * @return \Illuminate\Contracts\Queue\Queue|self
      */
-    public function connector(Queue $instance = null)
+    public function connector(QueueInterface $instance = null)
     {
         if ( ! is_null($instance)) {
             $this->manager()->connector($instance);

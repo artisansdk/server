@@ -242,12 +242,15 @@ class ServerTest extends TestCase
         $this->assertSame($broker, $server->broker(), 'Server should set the message broker when using a Broker service.');
 
         // Queues
+        QueueManager::fake();
         $queue = new NullQueue();
         $this->assertSame($server, $server->uses($queue, 'foo'), 'Server should return the server after a call to uses() when using a Queue service.');
         $this->assertSame($queue, $server->connector(), 'Server should set the queue connection when using a Queue service.');
         $this->assertSame($queue, $server->manager()->connector(), 'Server should set the queue connection on the manager when using a Queue service.');
         $this->assertSame('foo', $server->queue(), 'Server should set the queue name when using a Queue service.');
         $this->assertSame('foo', $server->manager()->queue(), 'Server should set the queue name on the manager when using a Queue service.');
+        $this->assertInstanceOf(QueueInterface::class, $server->use('null')->connector(), 'Server should make a connector for the driver passed as an argument to resolveConnector($driver).');
+        $this->assertSame('foo', $server->use($queue, 'foo')->queue(), 'Server should set the queue name when a second argument is provided to resolveConnector($connector, $queue).');
 
         // Logger
         $logger = new NullOutput();
@@ -301,22 +304,6 @@ class ServerTest extends TestCase
             }
         }
         $this->assertEquals(3, $exceptions, 'Server should throw InvalidArgumentException if the class does not exist, is not supported, or is being used as a string key without a value.');
-    }
-
-    /**
-     * Test that server can use queues as a bridge between realtime and offline processing.
-     */
-    public function testUsesQueueCanCreateConnection()
-    {
-        QueueManager::fake();
-        $server = new Server();
-        $server->manager(new Manager());
-        $queue = new NullQueue();
-
-        $this->assertSame($server, $server->usesQueue($queue), 'Server should return the server after a call to usesQueue() to continue fluent chaining.');
-        $this->assertSame($queue, $server->connector(), 'Server should set the queue as the connection when using usesQueue().');
-        $this->assertInstanceOf(QueueInterface::class, $server->usesQueue('null')->connector(), 'Server should make a connector for the driver passed as an argument to usesQueue($driver).');
-        $this->assertSame('foo', $server->usesQueue($queue, 'foo')->queue(), 'Server should set the queue name when a second argument is provided to usesQueue.');
     }
 
     /**
