@@ -46,9 +46,9 @@
         "test": [
             "vendor/bin/phpunit --colors=always",
             "vendor/bin/php-cs-fixer fix -v --diff --dry-run",
-            "vendor/bin/phpcpd src/ config/ --min-lines=3 --min-tokens=35",
             "vendor/bin/phpmd \"src/,config/\" html codesize,cleancode,unusedcode,naming --reportfile reports/phpmd.html --ignore-violations-on-exit",
-            "vendor/bin/pdepend --summary-xml=reports/stats.xml \"src/,config/\""
+            "vendor/bin/pdepend --summary-xml=reports/stats.xml \"src/,config/\"",
+            "vendor/bin/phpcpd src/ config/ --min-lines=3 --min-tokens=35"
         ]
     },
     "config": {

@@ -8,7 +8,6 @@ use ArtisanSDK\Server\Contracts\Server as ServerInterface;
 use ArtisanSDK\Server\Traits\FluentProperties;
 use Illuminate\Contracts\Queue\Queue as QueueInterface;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Facades\Queue as QueueManager;
 use InvalidArgumentException;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
@@ -298,7 +297,7 @@ class Server implements ServerInterface
      *          resolveConnector($connection, 'server') to use server queue
      *
      * @param \Illuminate\Contracts\Queue\Queue $connection
-     * @param string                                   $name
+     * @param string                            $name
      *
      * @return self
      */
