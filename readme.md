@@ -31,8 +31,7 @@ php artisan vendor:publish --provider="ArtisanSDK\\Server\\Provider" --tag=confi
 ```
 
 > **Show Me:** You can see how to integrate this package by browsing the source
-code of [`larandomizer/app`](http://github.com/larandomizer/app) which powers
-[Larandomizer.com](http://larandomizer.com).
+code of [`larandomizer/app`](http://github.com/larandomizer/app) which is a full featured prize give away app for meetups and conferences.
 
 ### Configure the Environment
 
