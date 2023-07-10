@@ -190,7 +190,7 @@ traits that can be used on any message to achieve a couple of common strategies:
 
 ## Licensing
 
-Copyright (c) 2017 [Artisans Collaborative](http://artisanscollaborative.com)
+Copyright (c) 2023 [Artisan Made](http://artisanmade.io)
 
 This package is released under the MIT license. Please see the LICENSE file
 distributed with every copy of the code for commercial licensing terms.
